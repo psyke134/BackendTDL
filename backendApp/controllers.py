@@ -65,7 +65,7 @@ class TaskAPI:
 
         return JsonResponse({"error": "Account name or task not found"}, status=404)
 
-class AmfHealthCheckAPI:
+class AmfAPI:
     @classmethod
     def healthCheck(self, request): #this API will be pinged by SAFplus middleware's proxy component to do health check
         if request.method != "GET":
