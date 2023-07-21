@@ -1,17 +1,18 @@
 from .models import Account, Task
+import datetime
 
 class TaskDAO:
     @staticmethod
-    def getTasksOf(accountName):
-        acc = AccountDAO.getAccount(accountName)
+    def getTasksOf(username):
+        acc = AccountDAO.getAccount(username)
         if not acc:
             return []
         rs = Task.objects.filter(owner=acc)
         return rs;
     
     @staticmethod
-    def addNewTask(accountName, taskText):
-        acc = AccountDAO.getAccount(accountName)
+    def addNewTask(username, taskText):
+        acc = AccountDAO.getAccount(username)
         if not acc:
             return False
         newTask = Task(owner=acc, text=taskText)
@@ -19,8 +20,8 @@ class TaskDAO:
         return True
 
     @staticmethod
-    def deleteTask(accountName, taskText):
-        acc = AccountDAO.getAccount(accountName)
+    def deleteTask(username, taskText):
+        acc = AccountDAO.getAccount(username)
         if not acc:
             return False
 
@@ -34,16 +35,27 @@ class TaskDAO:
     @staticmethod
     def getTask(taskText):
         try:
-            task = Task.objects.get(text=taskText)
+            task = Task.objects.filter(text=taskText).first()
         except Task.DoesNotExist:
             return None
         return task
 
 class AccountDAO:
     @staticmethod
-    def getAccount(accountName):
+    def createAccount(name, username, password):
+        existed = AccountDAO.getAccount(username)
+        if existed:
+            return False
+
+        now = datetime.datetime.now()
+        newAccount = Account(name=name, username=username, password=password, reg_date=now)
+        newAccount.save()
+        return True
+
+    @staticmethod
+    def getAccount(username):
         try:
-            acc = Account.objects.get(name=accountName)
+            acc = Account.objects.get(username=username)
         except Account.DoesNotExist:
             return None
         return acc
