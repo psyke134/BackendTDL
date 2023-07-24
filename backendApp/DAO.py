@@ -8,7 +8,7 @@ class TaskDAO:
         if not acc:
             return []
         rs = Task.objects.filter(owner=acc)
-        return rs;
+        return rs
     
     @staticmethod
     def addNewTask(username, taskText):
