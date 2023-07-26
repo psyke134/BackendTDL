@@ -7,7 +7,7 @@ urlpatterns = [
         path("task/addNew/", controllers.TaskAPI.addNew, name="AddTask"),
         path("task/delete/", controllers.TaskAPI.delete, name="DeleteTask"),
         path("account/register/", controllers.AccountAPI.register, name="Register"),
-        path("account/login/", controllers.AccountAPI.login, name="Login"),
+        path("account/authenticate/", controllers.AccountAPI.authenticate, name="Authenticate"),
         path("amf/healthCheck/", controllers.AmfAPI.healthCheck, name="HealthCheck"),
         path("amf/becomeActive/", controllers.AmfAPI.becomeActive, name="BecomeActive"),
 ]

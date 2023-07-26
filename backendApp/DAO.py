@@ -6,7 +6,7 @@ class TaskDAO:
     def getTasksOf(username):
         acc = AccountDAO.getAccount(username)
         if not acc:
-            return []
+            return None
         rs = Task.objects.filter(owner=acc)
         return rs
     
@@ -25,7 +25,7 @@ class TaskDAO:
         if not acc:
             return False
 
-        task = TaskDAO.getTask(taskText)
+        task = TaskDAO.getTask(acc, taskText)
         if not task:
             return False
 
@@ -33,9 +33,9 @@ class TaskDAO:
         return True
 
     @staticmethod
-    def getTask(taskText):
+    def getTask(account, taskText):
         try:
-            task = Task.objects.filter(text=taskText).first()
+            task = Task.objects.filter(text=taskText).filter(owner=account).first()
         except Task.DoesNotExist:
             return None
         return task

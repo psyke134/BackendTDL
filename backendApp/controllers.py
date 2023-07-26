@@ -21,9 +21,10 @@ class TaskAPI:
             return JsonResponse({"Error": "Account name is missing"}, status=404)
 
         tasks = TaskDAO.getTasksOf(username)
+        account = AccountDAO.getAccount(username)
 
-        if len(tasks) != 0:
-            taskDict = {"name": username, "task": [task.text for task in tasks]}
+        if len(tasks) != None:
+            taskDict = {"name": account.name, "task": [task.text for task in tasks]}
             return JsonResponse(taskDict, status=200)
 
         return JsonResponse({"Error": "Account name not found"}, status=404)
@@ -69,7 +70,7 @@ class TaskAPI:
 
 class AccountAPI:
     @classmethod
-    def login(self, request):
+    def authenticate(self, request):
         if request.method != "POST":
             return JsonResponse({"Error": "Method not allowed"}, status=405)
 
