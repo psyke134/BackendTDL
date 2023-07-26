@@ -10,7 +10,7 @@ class TaskAPI:
     @classmethod
     def tasksOf(self, request):
         if request.method != "GET":
-            error = {"Error": "Method not allowed"}
+            error = {"Error": "Only GET is allowed"}
             return JsonResponse(error, status=405)
 
         data = json.loads(request.body)
@@ -32,7 +32,7 @@ class TaskAPI:
     @classmethod
     def addNew(self, request):
         if request.method != "POST":
-            error = {"Error": "Method not allowed"}
+            error = {"Error": "Only POST is allowed"}
             return JsonResponse(error, status=405)
 
         data = json.loads(request.body)
@@ -52,7 +52,7 @@ class TaskAPI:
     @classmethod
     def delete(self, request):
         if request.method != "DELETE":
-            return JsonResponse({"Error": "Method not allowed"}, status=405)
+            return JsonResponse({"Error": "Only DELETE is allowed"}, status=405)
 
         data = json.loads(request.body)
 
@@ -72,7 +72,7 @@ class AccountAPI:
     @classmethod
     def authenticate(self, request):
         if request.method != "POST":
-            return JsonResponse({"Error": "Method not allowed"}, status=405)
+            return JsonResponse({"Error": "Only POST is allowed"}, status=405)
 
         data = json.loads(request.body)
 
@@ -91,7 +91,7 @@ class AccountAPI:
     @classmethod
     def register(self, request):
         if request.method != "POST":
-            return JsonResponse({"Error": "Method not allowed"}, status=405)
+            return JsonResponse({"Error": "Only POST is allowed"}, status=405)
 
         data = json.loads(request.body)
 
@@ -119,7 +119,7 @@ class AmfAPI:
         Call this API to do health check and will return SAFplus error code
         """
         if request.method != "GET":
-            return JsonResponse({"Error": "Method not allowed"}, status=405)
+            return JsonResponse({"Error": "Only GET is allowed"}, status=405)
 
         try:
             with connection.cursor() as cursor:
