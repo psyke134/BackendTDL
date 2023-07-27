@@ -3,6 +3,7 @@ from django.db import connection
 import json
 import requests
 import threading
+from .frontendAccess import FrontendAccess
 
 from .DAO import TaskDAO, AccountDAO    #data access objects
 
@@ -86,7 +87,7 @@ class AccountAPI:
         if acc:
             if acc.password == accPasswd:
                 return JsonResponse({"Message": "Successfully loged in"}, status=200)
-        return JsonResponse({"Error": "Wrong username or password"}, status=404)
+        return JsonResponse({"Error": "Wrong username or password"}, status=401)
 
     @classmethod
     def register(self, request):
@@ -138,15 +139,12 @@ class AmfAPI:
         """
         Call this API to tell the frontend server to use this active backend server
         """
-        #TODO: make a config file to load server IPs
-        url = "192.168.56.103:8000/Frontend/BackendServer/Update"
-        data = {"serverIP": "192.168.56.139"}
-        headers = {'Content-Type': 'application/json'}
 
-        try:
-            response = requests.post(url, data=json.dumps(data), headers=headers, timeout=2)
-        except requests.exceptions.Timeout:
-            return JsonResponse({"ClRcT": "0x04"}, status=500)  #frontend server is not available
+        (status, desc, msg) = FrontendAccess.updateBackendServer()
+        if status == 400:
+            return JsonResponse({"ClRcT": "0x04"}, status=400)  #frontend server is not available
+        elif status == 404:
+            return JsonResponse({"ClRcT": "0x0e"}, status=404)  #no settings
 
         return JsonResponse({"ClRcT": "0x0"}, status=200)
 
