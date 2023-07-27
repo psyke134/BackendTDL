@@ -11,6 +11,7 @@ class FrontendAccess:
     wellKnownStatus = {
         200: "OK",
         201: "Created",
+        400: "Request timed out",
         401: "Unauthorized",
         404: "Not found",
         405: "Method not allowed",
@@ -37,12 +38,15 @@ class FrontendAccess:
     @staticmethod
     def request(url, method, data, headers, timeout):
         if FrontendAccess.frontendServerIP == FrontendAccess.invalidIP:
-            return (404, "Not found", {"Error": "No frontend server set"})
+            return (404, BackendAccess.wellKnownStatus[404], {"Error": "No frontend server set"})
+
         try:
             sendMethod = FrontendAccess.wellKnowMethod[method]
             response = sendMethod(url, data=data, headers=headers, timeout=timeout)
         except requests.exceptions.Timeout:
-            return (400, "Request timed out", {"Error": "frontend server took too long make response"})
+            return (400, BackendAccess.wellKnownStatus[400], {"Error": "frontend server took too long make response"})
+        except requests.exceptions.ConnectionError:
+            return (500, BackendAccess.wellKnownStatus[500], {"Error": "Frontend server is not available right now"})
 
         data = response.json()
         status = response.status_code

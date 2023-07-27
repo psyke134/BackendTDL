@@ -139,9 +139,11 @@ class AmfAPI:
         """
         Call this API to tell the frontend server to use this active backend server
         """
+        if request.method != "POST":
+            return JsonResponse({"Error": "Only POST is allowed"}, status=405)
 
         (status, desc, msg) = FrontendAccess.updateBackendServer()
-        if status == 400:
+        if status == 400 or status == 500:
             return JsonResponse({"ClRcT": "0x04"}, status=400)  #frontend server is not available
         elif status == 404:
             return JsonResponse({"ClRcT": "0x0e"}, status=404)  #no settings
