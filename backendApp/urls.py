@@ -2,6 +2,8 @@ from django.urls import path
 
 from . import controllers
 
+app_name = "backendApp"
+
 urlpatterns = [
         path("task/", controllers.TaskAPI.tasksOf, name="TasksOf"),
         path("task/addNew/", controllers.TaskAPI.addNew, name="AddTask"),

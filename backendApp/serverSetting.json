@@ -1,0 +1,13 @@
+{
+    "myIP": "192.168.56.137",
+    "frontend": {
+        "frontendServerIP" : "192.168.56.1",
+        "protocol": "http",
+        "port": "8000"
+    },
+    "standby": {
+        "standByBackendServerIP": "192.168.56.136",
+        "protocol": "http",
+        "port": "8000"
+    }
+}

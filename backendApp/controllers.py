@@ -1,9 +1,8 @@
 from django.http import JsonResponse
 from django.db import connection
+from django.urls import reverse
 import json
-import requests
-import threading
-from .frontendAccess import FrontendAccess
+from .serverAccess import FrontendAccess, StandbyAccess
 
 from .DAO import TaskDAO, AccountDAO    #data access objects
 
@@ -46,6 +45,7 @@ class TaskAPI:
 
         status = TaskDAO.addNewTask(username, newTaskText)
         if status == True:
+            StandbyAccess.forwardApiRequest(reverse("backendApp:AddTask"), data, "post")    #use reverse to get the path since the codebase is identical on the other backend server, url shortcuts are available in urls.py
             return JsonResponse({"Message": "Successfully added task"}, status=201)
 
         return JsonResponse({"Error": "Account name not found"}, status=404)
@@ -65,6 +65,7 @@ class TaskAPI:
 
         status = TaskDAO.deleteTask(username, taskText)
         if status == True:
+            StandbyAccess.forwardApiRequest(reverse("backendApp:DeleteTask"), data, "delete")
             return JsonResponse({"Message": "Successfully deleted task"}, status=200)
 
         return JsonResponse({"Error": "Account name or task not found"}, status=404)
@@ -105,7 +106,8 @@ class AccountAPI:
 
         status = AccountDAO.createAccount(accName, accUser, accPasswd)
         if status == True:
-            return JsonResponse({"Message": "Successfully created account"}, status=200)
+            StandbyAccess.forwardApiRequest(reverse("backendApp:Register"), data, "post")
+            return JsonResponse({"Message": "Successfully created account"}, status=201)
 
         return JsonResponse({"Error": "Account with the username already existed"}, status=409)
 
@@ -149,22 +151,3 @@ class AmfAPI:
             return JsonResponse({"ClRcT": "0x0e"}, status=404)  #no settings
 
         return JsonResponse({"ClRcT": "0x0"}, status=200)
-
-class Utils:
-    @staticmethod
-    def forwardApiRequest(url, dataDict, method):
-        methodLut = {"GET": requests.get,
-                     "POST": requests.post,
-                     "DELETE": requests.delete}
-
-        sendFunc = methodLut.get(method, None)
-        if sendFunc:
-            headers = {'Content-Type': 'application/json'}
-            sendThrd = threading.Thread(target=_sendCallback, args=(sendFunc, url, dataDict, headers, 2))
-            sendThrd.start()
-    
-    def _sendCallback(sendFunc, url, dataDict, headers, timeout):
-        try:
-            sendFunc(url, data=json.dumps(dataDict), headers=headers, timeout=2)
-        except requests.exceptions.Timeout:
-            pass

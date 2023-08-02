@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from .frontendAccess import FrontendAccess
+from .serverAccess import FrontendAccess, StandbyAccess
 import json
 
 
@@ -7,11 +7,19 @@ class BackendappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'backendApp'
     def ready(self):
-        f = open("backendApp/frontendSetting.json", "r")
+        # load the IP configuations for this backend server
+        f = open("backendApp/serverSetting.json", "r")
         content = f.read()
         settingDict = json.loads(content)
         try:
-            frontendServerIP, myIP, port, protocol = settingDict["frontendServerIP"], settingDict["myIP"], settingDict["port"], settingDict["protocol"]
+            myIP = settingDict["myIP"]
+
+            frontendDict = settingDict["frontend"]
+            frontendIP, frontendPort, frontendProtocol = frontendDict["frontendServerIP"], frontendDict["port"], frontendDict["protocol"]
+
+            standbyDict = settingDict["standby"]
+            standByBackendIP, standByBackendPort, standByBackendProtocol = standbyDict["standByBackendServerIP"], standbyDict["port"], standbyDict["protocol"]
         except KeyError as e:
-            raise Exception("Missing frontend setting info [{0}]".format(str(e)))
-        FrontendAccess.updateInfo(frontendServerIP, port, protocol, myIP)
+            raise Exception("Missing servers setting info [{0}]".format(str(e)))
+        FrontendAccess.updateInfo(frontendIP, frontendPort, frontendProtocol, myIP)
+        StandbyAccess.updateInfo(standByBackendIP, standByBackendPort, standByBackendProtocol)

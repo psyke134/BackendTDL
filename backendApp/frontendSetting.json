@@ -1,6 +1,0 @@
-{
-    "myIP": "192.168.56.139",
-    "frontendServerIP" : "192.168.56.137",
-    "protocol": "http",
-    "port": "8000"
-}
